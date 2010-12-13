@@ -19,5 +19,5 @@ class PickleGearmanWorker(gearman.GearmanWorker):
 
 def call_gearman(func_name,*args):
     client = PickleGearmanClient(['127.0.0.1'])
-    return client.submit_job(func_name,*args).result
+    return client.submit_job(func_name,args).result
 
