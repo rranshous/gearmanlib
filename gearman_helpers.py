@@ -15,3 +15,9 @@ class PickleGearmanClient(gearman.GearmanClient):
 
 class PickleGearmanWorker(gearman.GearmanWorker):
     data_encoder = PickleDataEncoder
+
+
+def call_gearman(func_name,*args):
+    client = PickeGearmanClient([127.0.0.1])
+    return client.submit_job(func_name,*args)
+
