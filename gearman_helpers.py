@@ -18,7 +18,7 @@ class PickleGearmanWorker(gearman.GearmanWorker):
 
 
 def call_gearman(func_name,*args,**kwargs):
-    client = PickleGearmanClient(kwargs.get('host',[]) + ['127.0.0.1'])
+    client = PickleGearmanClient(kwargs.get('hosts',[]) + ['127.0.0.1'])
     r = client.submit_job(func_name,args)
     print 'result: %s' % r
     return r.result
