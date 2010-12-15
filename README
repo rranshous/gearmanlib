@@ -3,7 +3,8 @@ lib_wrapper.py
 usage: lib_wrapper.py <module name> <callable name>
 
 will import a module from the working directory and than import
-a callable from that module and create a worker for it 
+a callable from that module and create a worker for it named
+<module>_<callable>
 
 expects a pickle string, if the data is a tuple, it will be be
 passed to the callable using parameter expansion
