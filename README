@@ -1,0 +1,18 @@
+lib_wrapper.py
+
+usage: lib_wrapper.py <module name> <callable name>
+
+will import a module from the working directory and than import
+a callable from that module and create a worker for it 
+
+expects a pickle string, if the data is a tuple, it will be be
+passed to the callable using parameter expansion
+
+============
+
+gearman_helpers.py
+
+Simple example pickle encoder for client / worker
+
+simple call_gearman function that creates the client
+and passes on the unnamed args
