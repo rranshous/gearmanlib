@@ -1,0 +1,10 @@
+first (accomplished) goal is to be able to supply a module name
+and a callable to import and it would create a worker for that function
+
+right now I'm using pickle clients but that may change
+
+if you just supply a tuple than i send it's contents as seperate
+args to the worker function
+
+future goal is to share all callables by name, be able to supply a prefix for
+the worker names, and a number of workers to fire up per helper
