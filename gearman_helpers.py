@@ -3,6 +3,9 @@ import gearman
 from decorator import decorator
 
 def get_key(function):
+    """
+    returns back the gearman key for a function
+    """
     # for now we are going to go working dir + function name
     import os
     working_dir = os.path.basename(os.path.abspath('.'))
@@ -27,6 +30,10 @@ class PickleGearmanWorker(gearman.GearmanWorker):
 
 
 def call_gearman(key,*args,**kwargs):
+    """
+    try and find a worker for the given key.
+    """
+    # TODO: what happens if the worker doesn't exist?
     client = PickleGearmanClient(kwargs.get('hosts',[]) + ['127.0.0.1'])
     del kwargs['hosts']
     r = client.submit_job(key,(args,kwargs))
@@ -34,20 +41,25 @@ def call_gearman(key,*args,**kwargs):
     return r.result
 
 def gearmanize(function):
+    """
+    wrap's a function in a call_gearman callable
+    """
     def gearmanized(*args,**kwargs):
         return call_gearman(get_key(function),*args,**kwargs)
     return gearmanized
 
 @decorator
-def asycable(f,*args,**kwargs):
+def farmable(f,*args,**kwargs):
     """
     We are trying to enable farming random functions off to gearman 
     if there are any workers available
     """
     # check and see if we have an async arg
     if kwargs.get('async',False):
-        pass
-    # if we are async'n than lets try to farm this bitch
-    # out
-    result = call_gearman()
+        # if we are async'n than lets try to farm this bitch out
+        callable = gearmanize(f)
+    else:
+        callable = f
+
+    return callable(*args,**kwargs)
         
