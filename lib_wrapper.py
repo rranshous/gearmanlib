@@ -42,5 +42,5 @@ if __name__ == '__main__':
     gm_worker.register_task(key, decode)
 
     # Enter our work loop and call gm_worker.after_poll() after each time we timeout/see socket activity
-    print 'working on %s_%s' % (module,func)
+    print 'working on %s' % key
     gm_worker.work()

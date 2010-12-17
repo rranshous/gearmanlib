@@ -35,7 +35,8 @@ def call_gearman(key,*args,**kwargs):
     """
     # TODO: what happens if the worker doesn't exist?
     client = PickleGearmanClient(kwargs.get('hosts',[]) + ['127.0.0.1'])
-    del kwargs['hosts']
+    if 'hosts' in kwargs:
+        del kwargs['hosts']
     r = client.submit_job(key,(args,kwargs))
     print 'result: %s' % r
     return r.result
@@ -48,18 +49,29 @@ def gearmanize(function):
         return call_gearman(get_key(function),*args,**kwargs)
     return gearmanized
 
-@decorator
-def farmable(f,*args,**kwargs):
+
+#@decorator
+#def farmable(f,*args,**kwargs):
+
+class farmable(object):
     """
     We are trying to enable farming random functions off to gearman 
     if there are any workers available
     """
-    # check and see if we have an async arg
-    if kwargs.get('async',False):
-        # if we are async'n than lets try to farm this bitch out
-        callable = gearmanize(f)
-    else:
-        callable = f
+    def __init__(self,f):
+        self.f = f
 
-    return callable(*args,**kwargs)
-        
+    def __call__(self,*args,**kwargs):
+        f = self.f
+        print 'farmable'
+        # check and see if we have an async arg
+        if kwargs.get('farm',False):
+            print 'farming'
+            del kwargs['farm']
+            # if we are async'n than lets try to farm this bitch out
+            callable = gearmanize(f)
+        else:
+            callable = f
+
+        return callable(*args,**kwargs)
+            
