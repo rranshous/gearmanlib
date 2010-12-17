@@ -8,3 +8,6 @@ args to the worker function
 
 future goal is to share all callables by name, be able to supply a prefix for
 the worker names, and a number of workers to fire up per helper
+
+need to come up w/ a default key for worker names. the callable
+name seems most obvious, but might not be unique enough. maybe the name of the working dir + function name working under the assumption that the clone is named the same thing on each machine? we'll go w/ that for now
