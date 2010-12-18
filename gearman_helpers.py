@@ -28,26 +28,54 @@ class PickleGearmanClient(gearman.GearmanClient):
 class PickleGearmanWorker(gearman.GearmanWorker):
     data_encoder = PickleDataEncoder
 
+def get_client(host=[]):
+    client = PickleGearmanClient(host + ['127.0.0.1'])
+    return client
 
 def call_gearman(key,*args,**kwargs):
     """
     try and find a worker for the given key.
     """
     # TODO: what happens if the worker doesn't exist?
-    client = PickleGearmanClient(kwargs.get('hosts',[]) + ['127.0.0.1'])
+    client = get_client(kwargs.get('host'))
     if 'hosts' in kwargs:
         del kwargs['hosts']
     r = client.submit_job(key,(args,kwargs))
     print 'result: %s' % r
     return r.result
 
-def gearmanize(function):
+def gearmanize(function,background=False):
     """
     wrap's a function in a call_gearman callable
     """
     def gearmanized(*args,**kwargs):
-        return call_gearman(get_key(function),*args,**kwargs)
+        print 'background: %s' % background
+        client = get_client()
+        r = client.submit_job(get_key(function),(args,kwargs),
+                              background=background)
+        return r
     return gearmanized
+
+
+# TODO: add support for local background using threads
+def gearmanize_if_possible(f,timeout=5*60):
+    """
+    wrap a function so that it will try and be farmed
+    out to gearman, if there is no worker or it errors
+    for some other reason try to run it locally
+    """
+    def gearmanized_if_possible(*args,**kwargs):
+        # get a client
+        key = get_key(f)
+        client = get_client()
+        r = client.submit_job(key,(args,kwargs),poll_timeout=timeout)
+        if r.complete and not r.timed_out:
+            to_return = r.result
+        else:
+            print 'not complete running locally'
+            to_return = f(*args,**kwargs)
+        return to_return
+    return gearmanized_if_possible
 
 
 #@decorator
@@ -58,6 +86,11 @@ class farmable(object):
     We are trying to enable farming random functions off to gearman 
     if there are any workers available
     """
+    def __new__(cls,f,*args,**kwargs):
+        inst = object.__new__(cls,*args,**kwargs)
+        inst.__name__ = f.__name__
+        return inst
+
     def __init__(self,f):
         self.f = f
 
@@ -67,9 +100,19 @@ class farmable(object):
         # check and see if we have an async arg
         if kwargs.get('farm',False):
             print 'farming'
+            timeout = kwargs.get('timeout')
+            background = kwargs.get('background')
             del kwargs['farm']
+            if 'timeout' in kwargs:
+                del kwargs['timeout']
+            if 'background' in kwargs:
+                del kwargs['background']
             # if we are async'n than lets try to farm this bitch out
-            callable = gearmanize(f)
+            if background:
+                print 'background: %s' % background
+                callable = gearmanize(f,background=background)
+            else:
+                callable = gearmanize_if_possible(f,timeout=timeout)
         else:
             callable = f
 
