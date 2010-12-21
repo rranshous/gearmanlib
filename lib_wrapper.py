@@ -9,7 +9,7 @@
 # available
 
 if __name__ == '__main__':
-    from gearman_helpers import get_key
+    from gearman_helpers import get_key, HOSTS
     import os
     print os.path.abspath('.')
     import sys
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     f = getattr(m,func)
     import gearman
     from gearman_helpers import PickleGearmanWorker
-    gm_worker = PickleGearmanWorker(['localhost'])
+    gm_worker = PickleGearmanWorker(HOSTS)
     #gm_worker.set_client_id('your_worker_client_id_name')
     def decode(gearman_worker,gearman_job):
         try:
