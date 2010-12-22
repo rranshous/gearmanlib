@@ -107,7 +107,7 @@ class farmable(object):
         my_args = ('farm','background','timeout')
         params = {}
         for arg in my_args:
-            params[arg] = **kwargs.get(arg)
+            params[arg] = kwargs.get(arg)
             if kwargs.get(arg):
                 del kwargs[arg]
 
