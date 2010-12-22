@@ -108,11 +108,8 @@ class farmable(object):
         params = {}
         for arg in farm_args:
             params[arg] = kwargs.get(arg)
-            print 'del: %s' % arg
             if arg in kwargs:
                 del kwargs[arg]
-
-        print 'kwargs: %s' % kwargs
 
         # if we got a farm flag, than do it
         if params.get('farm'):
