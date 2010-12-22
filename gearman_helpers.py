@@ -104,15 +104,18 @@ class farmable(object):
         print 'farmable'
 
         # pull out our special variables
-        my_args = ('farm','background','timeout')
+        farm_args = ('farm','background','timeout')
         params = {}
-        for arg in my_args:
+        for arg in farm_args:
             params[arg] = kwargs.get(arg)
-            if kwargs.get(arg):
+            print 'del: %s' % arg
+            if arg in kwargs:
                 del kwargs[arg]
 
+        print 'kwargs: %s' % kwargs
+
         # if we got a farm flag, than do it
-        if params.get('arm'):
+        if params.get('farm'):
             print 'farming'
             # if we are async'n than lets try to farm this bitch out
             if params.get('background'):
