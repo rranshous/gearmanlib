@@ -28,7 +28,7 @@ class PickleGearmanClient(gearman.GearmanClient):
 class PickleGearmanWorker(gearman.GearmanWorker):
     data_encoder = PickleDataEncoder
 
-HOSTS = ['127.0.0.1','ranshous.com']
+HOSTS = ['gearman.mypubliccode.com']
 
 def get_client(host=[]):
     client = PickleGearmanClient(host + HOSTS)
