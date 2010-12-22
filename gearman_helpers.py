@@ -97,24 +97,29 @@ class farmable(object):
         self.f = f
 
     def __call__(self,*args,**kwargs):
+
+        # our function to run
         f = self.f
+
         print 'farmable'
-        # check and see if we have an async arg
-        if kwargs.get('farm',False):
+
+        # pull out our special variables
+        my_args = ('farm','background','timeout')
+        params = {}
+        for arg in my_args:
+            params[arg] = **kwargs.get(arg)
+            if kwargs.get(arg):
+                del kwargs[arg]
+
+        # if we got a farm flag, than do it
+        if params.get('arm'):
             print 'farming'
-            timeout = kwargs.get('timeout')
-            background = kwargs.get('background')
-            del kwargs['farm']
-            if 'timeout' in kwargs:
-                del kwargs['timeout']
-            if 'background' in kwargs:
-                del kwargs['background']
             # if we are async'n than lets try to farm this bitch out
-            if background:
-                print 'background: %s' % background
-                callable = gearmanize(f,background=background)
+            if params.get('background'):
+                print 'background: %s' % params.get('background')
+                callable = gearmanize(f,background=params.get('background'))
             else:
-                callable = gearmanize_if_possible(f,timeout=timeout)
+                callable = gearmanize_if_possible(f,timeout=params.get('timeout'))
         else:
             callable = f
 
