@@ -101,8 +101,6 @@ class farmable(object):
         # our function to run
         f = self.f
 
-        print 'farmable'
-
         # pull out our special variables
         farm_args = ('farm','background','timeout')
         params = {}
