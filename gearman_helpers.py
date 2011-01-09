@@ -80,9 +80,6 @@ def gearmanize_if_possible(f,timeout=5*60):
     return gearmanized_if_possible
 
 
-#@decorator
-#def farmable(f,*args,**kwargs):
-
 class farmable(object):
     """
     We are trying to enable farming random functions off to gearman 
@@ -115,11 +112,10 @@ class farmable(object):
             # if we are async'n than lets try to farm this bitch out
             if params.get('background'):
                 print 'background: %s' % params.get('background')
-                callable = gearmanize(f,background=params.get('background'))
+                to_call = gearmanize(f,background=params.get('background'))
             else:
-                callable = gearmanize_if_possible(f,timeout=params.get('timeout'))
+                to_call = gearmanize_if_possible(f,timeout=params.get('timeout'))
         else:
-            callable = f
+            to_call = f
 
-        return callable(*args,**kwargs)
-            
+        return to_call(*args,**kwargs)
